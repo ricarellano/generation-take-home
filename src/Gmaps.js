@@ -22,15 +22,23 @@ class Gmaps extends React.Component {
 
     });
 
+
      let geocoder = new google.maps.Geocoder();
 
-     function geocodeAddress(geocoder, resultsMap, address) {
-       geocoder.geocode({'address': address}, function(results, status) {
+     function geocodeAddress(geocoder, resultsMap, location) {
+       geocoder.geocode({'address': location.Address}, function(results, status) {
          if (status === 'OK') {
-           resultsMap.setCenter(results[0].geometry.location);
-           this.marker = new google.maps.Marker({
+            let infowindow = new google.maps.InfoWindow({
+             content: location.Name + ' ' + '<button>save</button>',
+             position: results[0].geometry.location
+           });
+
+           let marker = new google.maps.Marker({
              map: resultsMap,
              position: results[0].geometry.location
+           });
+            marker.addListener('click', function() {
+             infowindow.open(map);
            });
          } else {
            alert('Geocode was not successful for the following reason: ' + status);
@@ -39,17 +47,21 @@ class Gmaps extends React.Component {
      }
 
 
-
    this.serverRequest =
      axios
        .get('../store_directory.json')
        .then(function(result) {
          result.data.forEach(function(location){
-           geocodeAddress(geocoder, map, location.Address);
+           geocodeAddress(geocoder, map, location);
+
+
          })
        })
 
+
  }
+
+
 
   render() {
     return (
