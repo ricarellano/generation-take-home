@@ -1,13 +1,15 @@
-var React = require('react');
-var axios = require('axios');
-var store_directory = require('../store_directory.json');
-var mapStyles = require('../styles');
+import React from 'react';
+import axios from 'axios';
+import store_directory from '../store_directory.json';
+import mapStyles from '../styles';
 
 
 const MEXICO = {
   lat: 19.4326,
   lng: -99.1332
 };
+
+let currentLocation = {}
 
 class Gmaps extends React.Component {
   constructor() {
@@ -29,7 +31,7 @@ class Gmaps extends React.Component {
        geocoder.geocode({'address': location.Address}, function(results, status) {
          if (status === 'OK') {
             let infowindow = new google.maps.InfoWindow({
-             content: location.Name + ' ' + '<button>save</button>',
+             content: location.Name,
              position: results[0].geometry.location
            });
 
@@ -39,6 +41,8 @@ class Gmaps extends React.Component {
            });
             marker.addListener('click', function() {
              infowindow.open(map);
+             currentLocation = location
+             console.log(currentLocation)
            });
          } else {
            alert('Geocode was not successful for the following reason: ' + status);
@@ -62,12 +66,22 @@ class Gmaps extends React.Component {
  }
 
 
+ saveLocation = () => {
+   console.log('button clicked', currentLocation)
+ }
 
   render() {
     return (
       <div className="row">
         <div ref="map" style={style} className="map col-sm-12 col-sm-offset-2"></div>
+
+        <button className="btn btn-success text-center"
+          onClick={this.saveLocation}
+          >
+          Save Location
+        </button>
       </div>
+
     )
   }
 }
